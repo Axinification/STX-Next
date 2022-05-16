@@ -40,7 +40,7 @@ class BookListCreateAPIView(generics.ListCreateAPIView):
         if title is not None:
             queryset = queryset.filter(title__in=titles)
 
-    #     return queryset
+        return queryset
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -53,7 +53,6 @@ class ImportAPIView(generics.CreateAPIView):
         author = request.data['author']
         a = f"https://www.googleapis.com/books/v1/volumes?q={author}+inauthor"
         response = requests.get(a).json()
-        totalItems = response['totalItems']
         items = response['items']
         for item in items:
             info = item['volumeInfo']
@@ -76,8 +75,8 @@ class ImportAPIView(generics.CreateAPIView):
                 serializer = BookDetailsSerializer(data=book_data)
                 if serializer.is_valid(raise_exception=True):
                     serializer.save()
-                    return Response(totalItems)
-                return Response(serializer.errors)
+            return Response(len(items))
+                    
             # except KeyError:
             #     print("Failed to get data")
             #     pass
