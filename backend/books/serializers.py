@@ -14,6 +14,7 @@ class BookSimpleSerializer(serializers.ModelSerializer):
             'acquired',
         ]
 
+
 class BookDetailsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book

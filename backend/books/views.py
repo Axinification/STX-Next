@@ -3,6 +3,7 @@ import requests
 from .models import Book
 from .serializers import BookDetailsSerializer, BookSimpleSerializer
 from rest_framework import generics
+from .filters import BooksSearchFilter
 
 
 class BookRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView,
@@ -13,10 +14,8 @@ class BookRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView,
 
 
 class BookListCreateAPIView(generics.ListCreateAPIView):
-
-    def get_queryset(self):
-        queryset = Book.objects.all()
-        return queryset
+    queryset = Book.objects.all()
+    filter_backends = [BooksSearchFilter]
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
