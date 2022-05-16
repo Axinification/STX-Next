@@ -14,15 +14,15 @@ class BooksSearchFilter(filters.BaseFilterBackend):
         to_year = request.GET.get('to', None)
         author = request.GET.get('author', None)
         title = request.GET.get('title', None)
-        # years = Book.objects.only('published_year')
+        books = Book.objects.all()
         if author is not None:
-            queryset = queryset.filter(authors__icontains=author)
+            queryset = books.filter(authors__icontains=author)
         if from_year is not None:
-            queryset = queryset.filter(GreaterThanOrEqual(
+            queryset = books.filter(GreaterThanOrEqual(
                                        int(F('published_year')), from_year))
         if to_year is not None:
-            queryset = queryset.filter(LessThanOrEqual(
+            queryset = books.filter(LessThanOrEqual(
                                        int(F('published_year')), to_year))
         if title is not None:
-            queryset = queryset.filter(title__icontains=title)
+            queryset = books.filter(title__icontains=title)
         return queryset()
