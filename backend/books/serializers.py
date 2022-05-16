@@ -3,18 +3,22 @@ from rest_framework import serializers
 from .models import Book
 
 
-class BookSerializer(serializers.ModelSerializer):
+class BookSimpleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Book
         fields = [
             'id',
-            'external_id',
             'title',
             'authors',
             'published_year',
             'acquired',
-            'thumbnail'
         ]
+
+
+class BookDetailsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Book
+        fields = '__all__'
 
     # def create(self, validated_data):
     #     if id is not None:
