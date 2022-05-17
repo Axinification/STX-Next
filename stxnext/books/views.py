@@ -26,28 +26,49 @@ class BookListCreateAPIView(generics.ListCreateAPIView):
 class ImportAPIView(generics.CreateAPIView):
     def post(self, request):
         author = request.data['author']
-        a = f"https://www.googleapis.com/books/v1/volumes?q={author}+inauthor"
-        response = requests.get(a).json()
+        book_count = 0
+        url = "https://www.googleapis.com/books/v1/volumes"
+        query = f"?q={author}+inauthor"
+        response = requests.get(url+query).json()
         items = response['items']
         for item in items:
             info = item['volumeInfo']
-            try:
-                thumbnail = info['imageLinks']['thumbnail']
-            except KeyError:
-                thumbnail = "None provided"
+
             try:
                 title = f"{info['title']} {info['subtitle']}"
             except KeyError:
                 title = info['title']
-            finally:
+
+            try:
+                thumbnail = info['imageLinks']['thumbnail']
+            except KeyError:
+                thumbnail = "None provided"
+
+            try:
+                authors = info['authors']
+            except KeyError:
+                authors = ['']
+
+            try:
+                published_year = int(info['publishedDate'][:4])
+            except KeyError:
+                published_year = 0
+
+            try:
                 book_data = {
                     'external_id': item['id'],
                     'title': title,
-                    'authors': info['authors'],
-                    'published_year': int(info['publishedDate'][:4]),
+                    'authors': authors,
+                    'published_year': published_year,
                     'thumbnail': thumbnail,
                 }
                 serializer = BookDetailsSerializer(data=book_data)
-                if serializer.is_valid(raise_exception=True):
+                if serializer.is_valid():
                     serializer.save()
-        return JsonResponse({'imported': len(items)})
+                    book_count += 1
+                else:
+                    continue
+            except KeyError as e:
+                print(e['external_id'])
+                continue
+        return JsonResponse({'imported': book_count})
