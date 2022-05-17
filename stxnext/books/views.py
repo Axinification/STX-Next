@@ -14,57 +14,40 @@ class BookRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView,
 
 
 class BookListCreateAPIView(generics.ListCreateAPIView):
-    books = Book.objects
-    # queryset.bulk_update(Book.objects.select_related('published_year'))
+    queryset = Book.objects.all()
     filter_backends = [BooksSearchFilter]
-    
+
     def get_serializer_class(self):
         if self.request.method == 'POST':
             return BookDetailsSerializer
         return BookSimpleSerializer
 
 
-class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
+class ImportAPIView(generics.CreateAPIView):
     def post(self, request):
         author = request.data['author']
-        self.books_count = 0
-        self.start_index = 0
-        self.max_results = 40  # max 40
-        books_url = f"""https://www.googleapis.com/books/v1/volumes?q={author}+inauthor&printType=books&startIndex={self.start_index}&maxResults={self.max_results}"""
-        response = requests.get(books_url).json()
-        self.total_items = response['totalItems']
+        a = f"https://www.googleapis.com/books/v1/volumes?q={author}+inauthor"
+        response = requests.get(a).json()
         items = response['items']
-
-        while self.total_items > 0:
-            for item in items:
-                info = item['volumeInfo']
-                try:
-                    book_data = {
-                        'external_id': item['id'],
-                        'title': info['title'],
-                        'authors': info['authors'],
-                        'published_year': info['publishedDate'][:4],
-                        'thumbnail': info['imageLinks']['thumbnail'],
-                    }
-                    serializer = BookDetailsSerializer(data=book_data)
-                    if serializer.is_valid(raise_exception=True):
-                        serializer.save()
-                        self.books_count += 1
-                        # print(self.books_count)
-                except Exception:
-                    continue
-            self.start_index += self.max_results
-            if self.total_items >= self.max_results:
-                self.total_items -= self.max_results
-            else:
-                self.total_items -= self.total_items
-                print(self.total_items)
-            books_url = f"""https://www.googleapis.com/books/v1/volumes?q={author}+inauthor&printType=books&startIndex={self.start_index}&maxResults={self.max_results}"""
+        for item in items:
+            info = item['volumeInfo']
             try:
-                response = requests.get(books_url).json()
-                items = response['items']
-            except Exception as e:
-                if e == 'items':
-                    print(e)
-                break
-        return JsonResponse({'imported': self.books_count})
+                thumbnail = info['imageLinks']['thumbnail']
+            except KeyError:
+                thumbnail = "None provided"
+            try:
+                title = f"{info['title']} {info['subtitle']}"
+            except KeyError:
+                title = info['title']
+            finally:
+                book_data = {
+                    'external_id': item['id'],
+                    'title': title,
+                    'authors': info['authors'],
+                    'published_year': int(info['publishedDate'][:4]),
+                    'thumbnail': thumbnail,
+                }
+                serializer = BookDetailsSerializer(data=book_data)
+                if serializer.is_valid(raise_exception=True):
+                    serializer.save()
+        return JsonResponse({'imported': len(items)})
