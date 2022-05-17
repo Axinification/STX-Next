@@ -3,7 +3,7 @@ from .serializers import BookFilterSerializer
 from django.db.models.lookups import GreaterThanOrEqual, LessThanOrEqual
 from django.db.models import F
 from .models import Book
-from django_bulk_update.helper import bulk_update
+# from django_bulk_update.helper import bulk_update
 
 
 class BooksSearchFilter(filters.BaseFilterBackend):

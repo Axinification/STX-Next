@@ -1,1 +1,1 @@
-web: python manage.py runserver https://stxnext-app.herokuapp.com:$
+web: gunicorn stxnext.wsgi --log-file -
