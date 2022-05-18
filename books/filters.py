@@ -13,7 +13,7 @@ class BookFilterBackend(filters.DjangoFilterBackend):
         return kwargs
 
 
-class BooksSearchFilter(rest_filters.BaseFilterBackend):    
+class BooksSearchFilter(rest_filters.BaseFilterBackend):
 
     def filter_queryset(self, request, queryset, view):
         from_year = request.GET.get('from', None)

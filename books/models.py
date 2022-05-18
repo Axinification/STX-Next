@@ -8,10 +8,11 @@ from django.contrib.postgres.fields import ArrayField
 
 
 class Book(models.Model):
-    external_id = models.CharField(max_length=30, null=True,
-                                   blank=True, unique=True)
+    external_id = models.CharField(max_length=30, null=True, blank=True)
     title = models.TextField()
-    authors = ArrayField(models.CharField(max_length=255), default=list)
-    published_year = models.CharField(max_length=4, null=True)
+    authors = ArrayField(models.CharField(
+        max_length=255, default=''), default=list)
+    published_year = models.CharField(max_length=4, default='')
     acquired = models.BooleanField(default=False)
-    thumbnail = models.TextField(null=True, blank=True)
+    thumbnail = models.TextField(default='')
+
