@@ -1,6 +1,6 @@
 import requests
 
-endpoint = "http://localhost:8000/books/"
+endpoint = "https://stxnext-app.herokuapp.com/post/"
 response = requests.get(endpoint)
 
 print(response.json())

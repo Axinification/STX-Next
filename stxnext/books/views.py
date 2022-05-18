@@ -1,9 +1,10 @@
 from django.http import JsonResponse
 import requests
 from .models import Book
-from .serializers import BookDetailsSerializer, BookSimpleSerializer
+from .serializers import BookDetailsSerializer, BookImportSerializer, BookSimpleSerializer
 from rest_framework import generics
-from .filters import BooksSearchFilter
+from .filters import BookFilterBackend, BooksSearchFilter
+from .utils import get_url_string
 
 
 class BookRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView,
@@ -15,7 +16,12 @@ class BookRetrieveUpdateDestroyAPIView(generics.RetrieveUpdateDestroyAPIView,
 
 class BookListCreateAPIView(generics.ListCreateAPIView):
     queryset = Book.objects.all()
-    filter_backends = [BooksSearchFilter]
+    filter_backends = [BooksSearchFilter, BookFilterBackend]
+
+    def get_filterset_kwargs(self):
+        return {
+            'pubished_date': int(self.get_published_date()),
+        }
 
     def get_serializer_class(self):
         if self.request.method == 'POST':
@@ -23,52 +29,65 @@ class BookListCreateAPIView(generics.ListCreateAPIView):
         return BookSimpleSerializer
 
 
-class ImportAPIView(generics.CreateAPIView):
+class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
     def post(self, request):
         author = request.data['author']
-        book_count = 0
-        url = "https://www.googleapis.com/books/v1/volumes"
-        query = f"?q={author}+inauthor"
-        response = requests.get(url+query).json()
-        items = response['items']
-        for item in items:
-            info = item['volumeInfo']
-
-            try:
-                title = f"{info['title']} {info['subtitle']}"
-            except KeyError:
+        self.book_count = 0
+        start_index = 0
+        max_results = 40
+        page = get_url_string(author, start_index, max_results)
+        response = requests.get(page).json()
+        total_items = response['totalItems']
+        while total_items > 0:
+            items = response['items']
+            for item in items:
+                info = item['volumeInfo']
                 title = info['title']
-
-            try:
-                thumbnail = info['imageLinks']['thumbnail']
-            except KeyError:
-                thumbnail = "None provided"
-
-            try:
-                authors = info['authors']
-            except KeyError:
                 authors = ['']
-
-            try:
-                published_year = int(info['publishedDate'][:4])
-            except KeyError:
-                published_year = 0
-
-            try:
-                book_data = {
-                    'external_id': item['id'],
-                    'title': title,
-                    'authors': authors,
-                    'published_year': published_year,
-                    'thumbnail': thumbnail,
-                }
-                serializer = BookDetailsSerializer(data=book_data)
-                if serializer.is_valid():
-                    serializer.save()
-                    book_count += 1
-                else:
+                published_year = ''
+                thumbnail = ''
+                # print(info)
+                try:
+                    title = f"{info['title']} {info['subtitle']}"
+                    # print(title)
+                except KeyError:
                     continue
-            except KeyError as e:
-                print(e['external_id'])
-                continue
-        return JsonResponse({'imported': book_count})
+
+                try:
+                    thumbnail = info['imageLinks']['thumbnail']
+                    # print(thumbnail)
+                except KeyError:
+                    continue
+
+                try:
+                    authors = info['authors']
+                    # print(authors)
+                except KeyError:
+                    continue
+
+                try:
+                    published_year = info['publishedDate'][:4]
+                    # print(published_year)
+                except KeyError:
+                    continue
+
+                book_data = {
+                        'external_id': item['id'],
+                        'title': title,
+                        'authors': authors,
+                        'published_year': published_year,
+                        'thumbnail': thumbnail,
+                    }
+                serializer = BookImportSerializer(data=book_data)
+                if serializer.is_valid():
+                    self.book_count = self.book_count + 1
+                    print(self.book_count)
+                    serializer.save()
+
+            total_items -= max_results
+            start_index += max_results
+            print(total_items)
+            get_url_string(author, start_index, max_results)
+            response = requests.get(page).json()
+            # return self.book_count
+        return JsonResponse({'imported': self.book_count})

@@ -1,5 +1,5 @@
 import requests
 
-endpoint = "http://localhost:8000/books/1"
+endpoint = "https://stxnext-app.herokuapp.com/books/1"
 response = requests.delete(endpoint)
 print(response)

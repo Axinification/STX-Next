@@ -1,7 +1,7 @@
 import requests
 
-endpoint = "http://localhost:8000/import/"
+endpoint = "https://stxnext-app.herokuapp.com/import/"
 
-response = requests.post(endpoint, json={"author": "tolkien"})
+response = requests.post(endpoint, json={"author": "nazwisko"})
 
 print(response.json())
