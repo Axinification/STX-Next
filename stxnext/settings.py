@@ -82,17 +82,34 @@ DATABASES = {
     #     'NAME': BASE_DIR / 'db.sqlite3',
     # }
 
+
+    # Heroku
+    # 'default': {
+
+    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+    #     'NAME': 'd4o4fi9h34o90e',
+
+    #     'USER': 'qlnyfplooiqlov',
+
+    #     'PASSWORD': '593186ce9f8364e82bdf570b6eac97348b31593d842701c4c4e76ccd271106f8',
+
+    #     'HOST': 'ec2-176-34-211-0.eu-west-1.compute.amazonaws.com',
+
+    #     'PORT': '5432',
+    # }
+    #  Local
     'default': {
 
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
 
-        'NAME': 'd4o4fi9h34o90e',
+        'NAME': 'stx-next-book',
 
-        'USER': 'qlnyfplooiqlov',
+        'USER': 'Axins',
 
-        'PASSWORD': '593186ce9f8364e82bdf570b6eac97348b31593d842701c4c4e76ccd271106f8',
+        'PASSWORD': '135531',
 
-        'HOST': 'ec2-176-34-211-0.eu-west-1.compute.amazonaws.com',
+        'HOST': 'localhost',
 
         'PORT': '5432',
     }

@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-from django.core.validators import MaxValueValidator
+# from django.core.validators import MaxValueValidator
 
 # Create your models here.
 
@@ -10,8 +10,8 @@ from django.core.validators import MaxValueValidator
 class Book(models.Model):
     external_id = models.CharField(max_length=30, null=True,
                                    blank=True, unique=True)
-    title = models.CharField(max_length=120)
-    authors = ArrayField(models.CharField(max_length=50), default=list)
-    published_year = models.IntegerField(validators=[MaxValueValidator(9999)])
+    title = models.TextField()
+    authors = ArrayField(models.CharField(max_length=255), default=list)
+    published_year = models.CharField(max_length=4, null=True)
     acquired = models.BooleanField(default=False)
     thumbnail = models.TextField(null=True, blank=True)
