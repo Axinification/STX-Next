@@ -5,11 +5,9 @@ from rest_framework import filters as rest_filters
 class BookFilterBackend(filters.DjangoFilterBackend):
     def get_filterset_kwargs(self, request, queryset, view):
         kwargs = super().get_filterset_kwargs(request, queryset, view)
-
         # merge filterset kwargs provided by view class
         if hasattr(view, 'get_filterset_kwargs'):
             kwargs.update(view.get_filterset_kwargs())
-
         return kwargs
 
 

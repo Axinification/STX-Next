@@ -1,10 +1,5 @@
 from django.db import models
 from django.contrib.postgres.fields import ArrayField
-# from django.core.validators import MaxValueValidator
-
-# Create your models here.
-
-# TODO left published year in Integer for deployment, will work on filtering with string next
 
 
 class Book(models.Model):

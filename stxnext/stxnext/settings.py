@@ -98,21 +98,6 @@ DATABASES = {
 
         'PORT': '5432',
     }
-    #  Local
-    # 'default': {
-
-    #     'ENGINE': 'django.db.backends.postgresql_psycopg2',
-
-    #     'NAME': 'stx-next-book',
-
-    #     'USER': 'Axins',
-
-    #     'PASSWORD': '135531',
-
-    #     'HOST': 'localhost',
-
-    #     'PORT': '5432',
-    # }
 }
 
 

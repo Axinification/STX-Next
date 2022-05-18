@@ -46,28 +46,24 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
                 authors = ['']
                 published_year = ''
                 thumbnail = ''
-                # print(info)
+
                 try:
                     title = f"{info['title']} {info['subtitle']}"
-                    # print(title)
                 except KeyError:
                     continue
 
                 try:
                     thumbnail = info['imageLinks']['thumbnail']
-                    # print(thumbnail)
                 except KeyError:
                     continue
 
                 try:
                     authors = info['authors']
-                    # print(authors)
                 except KeyError:
                     continue
 
                 try:
                     published_year = info['publishedDate'][:4]
-                    # print(published_year)
                 except KeyError:
                     continue
 
@@ -78,6 +74,7 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
                         'published_year': published_year,
                         'thumbnail': thumbnail,
                     }
+
                 serializer = BookImportSerializer(data=book_data)
                 if serializer.is_valid():
                     self.book_count = self.book_count + 1
@@ -89,5 +86,4 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
             print(total_items)
             get_url_string(author, start_index, max_results)
             response = requests.get(page).json()
-            # return self.book_count
         return JsonResponse({'imported': self.book_count})
