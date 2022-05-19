@@ -40,7 +40,9 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
         total_items = response['totalItems']
         while total_items > 0:
             items = response['items']
+            print(items)
             for item in items:
+                external_id = item['id']
                 info = item['volumeInfo']
                 title = info['title']
                 authors = ['']
@@ -68,7 +70,7 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
                     continue
 
                 book_data = {
-                        'external_id': item['id'],
+                        'external_id': external_id,
                         'title': title,
                         'authors': authors,
                         'published_year': published_year,
@@ -83,7 +85,6 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
 
             total_items -= max_results
             start_index += max_results
-            print(total_items)
-            get_url_string(author, start_index, max_results)
+            page = get_url_string(author, start_index, max_results)
             response = requests.get(page).json()
         return JsonResponse({'imported': self.book_count})

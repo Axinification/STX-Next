@@ -22,6 +22,7 @@ class BookImportSerializer(serializers.ModelSerializer):
         if value in external_ids:
             raise ValidationError(
                 {'external_id': "external_id has to be unique"})
+        return value
 
     class Meta:
         model = Book

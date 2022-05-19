@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 from os import path
+import sys
 import django_heroku
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,28 +77,57 @@ WSGI_APPLICATION = 'stxnext.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
-DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': BASE_DIR / 'db.sqlite3',
-    # }
+if 'test' in sys.argv:
+    DATABASES = {
 
+        'default': {
 
-    # Heroku
-    'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
 
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'd1ga1jkt311pis',
 
-        'NAME': 'd4nk4kafuu8u49',
+            'USER': 'kmtilusyflyxbn',
 
-        'USER': 'evmcnzkpvhuhrn',
+            'PASSWORD': 'ee457f35e083d661728799486339b4fbe69601cd1df711a99f520947ced902f9',
 
-        'PASSWORD': '27e7ee12ea27a41337f53fac14552997b747015f52f1d899537bb7e57cc2d3bf',
+            'HOST': 'ec2-54-165-184-219.compute-1.amazonaws.com',
 
-        'HOST': 'ec2-52-86-115-245.compute-1.amazonaws.com',
+            'PORT': '5432',
 
-        'PORT': '5432',
+            'TEST': {
+                'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+                'NAME': 'd1ga1jkt311pis',
+
+                'USER': 'kmtilusyflyxbn',
+
+                'PASSWORD': 'ee457f35e083d661728799486339b4fbe69601cd1df711a99f520947ced902f9',
+
+                'HOST': 'ec2-54-165-184-219.compute-1.amazonaws.com',
+
+                'PORT': '5432',
+            },
+
+        }
     }
+else:
+    DATABASES = {
+
+        'default': {
+
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+
+            'NAME': 'd4nk4kafuu8u49',
+
+            'USER': 'evmcnzkpvhuhrn',
+
+            'PASSWORD': '27e7ee12ea27a41337f53fac14552997b747015f52f1d899537bb7e57cc2d3bf',
+
+            'HOST': 'ec2-52-86-115-245.compute-1.amazonaws.com',
+
+            'PORT': '5432',
+
+        }
 }
 
 
