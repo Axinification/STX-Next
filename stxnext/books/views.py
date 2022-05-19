@@ -37,10 +37,13 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
         max_results = 40
         page = get_url_string(author, start_index, max_results)
         response = requests.get(page).json()
-        total_items = response['totalItems']
-        while total_items > 0:
-            items = response['items']
-            print(items)
+
+        while True:
+            try:
+                items = response['items']
+            except KeyError:
+                break
+
             for item in items:
                 external_id = item['id']
                 info = item['volumeInfo']
@@ -83,7 +86,6 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
                     print(self.book_count)
                     serializer.save()
 
-            total_items -= max_results
             start_index += max_results
             page = get_url_string(author, start_index, max_results)
             response = requests.get(page).json()
