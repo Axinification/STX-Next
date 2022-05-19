@@ -40,44 +40,43 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
         total_items = response['totalItems']
         while total_items > 0:
             items = response['items']
+            print(items)
             for item in items:
+                external_id = item['id']
                 info = item['volumeInfo']
                 title = info['title']
                 authors = ['']
                 published_year = ''
                 thumbnail = ''
-                # print(info)
+
                 try:
                     title = f"{info['title']} {info['subtitle']}"
-                    # print(title)
                 except KeyError:
                     continue
 
                 try:
                     thumbnail = info['imageLinks']['thumbnail']
-                    # print(thumbnail)
                 except KeyError:
                     continue
 
                 try:
                     authors = info['authors']
-                    # print(authors)
                 except KeyError:
                     continue
 
                 try:
                     published_year = info['publishedDate'][:4]
-                    # print(published_year)
                 except KeyError:
                     continue
 
                 book_data = {
-                        'external_id': item['id'],
+                        'external_id': external_id,
                         'title': title,
                         'authors': authors,
                         'published_year': published_year,
                         'thumbnail': thumbnail,
                     }
+
                 serializer = BookImportSerializer(data=book_data)
                 if serializer.is_valid():
                     self.book_count = self.book_count + 1
@@ -86,8 +85,6 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
 
             total_items -= max_results
             start_index += max_results
-            print(total_items)
-            get_url_string(author, start_index, max_results)
+            page = get_url_string(author, start_index, max_results)
             response = requests.get(page).json()
-            # return self.book_count
         return JsonResponse({'imported': self.book_count})
