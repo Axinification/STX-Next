@@ -1,7 +1,9 @@
 from django.http import JsonResponse
 import requests
 from .models import Book
-from .serializers import BookDetailsSerializer, BookImportSerializer, BookSimpleSerializer
+from .serializers import (BookDetailsSerializer,
+                          BookImportSerializer,
+                          BookSimpleSerializer)
 from rest_framework import generics
 from .filters import BookFilterBackend, BooksSearchFilter
 from .utils import get_url_string
@@ -32,6 +34,7 @@ class BookListCreateAPIView(generics.ListCreateAPIView):
 class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
     def post(self, request):
         author = request.data['author']
+        # TODO Check author filetring
         self.book_count = 0
         start_index = 0
         max_results = 40
@@ -48,9 +51,9 @@ class ImportAPIView(generics.CreateAPIView, generics.UpdateAPIView):
                 external_id = item['id']
                 info = item['volumeInfo']
                 title = info['title']
-                authors = ['']
-                published_year = ''
-                thumbnail = ''
+                authors = None
+                published_year = None
+                thumbnail = None
 
                 try:
                     title = f"{info['title']} {info['subtitle']}"

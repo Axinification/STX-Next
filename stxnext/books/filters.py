@@ -12,7 +12,6 @@ class BookFilterBackend(filters.DjangoFilterBackend):
 
 
 class BooksSearchFilter(rest_filters.BaseFilterBackend):
-
     def filter_queryset(self, request, queryset, view):
         from_year = request.GET.get('from', None)
         to_year = request.GET.get('to', None)

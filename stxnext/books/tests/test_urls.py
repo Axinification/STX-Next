@@ -1,5 +1,6 @@
 from django.test import SimpleTestCase
-from books.views import BookRetrieveUpdateDestroyAPIView, BookListCreateAPIView, ImportAPIView
+from books.views import (BookRetrieveUpdateDestroyAPIView,
+                         BookListCreateAPIView, ImportAPIView)
 from django.urls import resolve, reverse
 
 
